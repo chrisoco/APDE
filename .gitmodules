@@ -1,0 +1,8 @@
+[submodule "APDE_BE"]
+	path = APDE_BE
+	url = git@github.com:chrisoco/APDE_BE.git
+	branch = main
+[submodule "APDE_FE"]
+	path = APDE_FE
+	url = git@github.com:chrisoco/APDE_FE.git
+	branch = main

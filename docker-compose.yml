@@ -1,0 +1,47 @@
+services:
+  mongo:
+    image: mongo:8
+    container_name: apde_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: apde
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./APDE_BE
+      dockerfile: Dockerfile
+    container_name: apde_backend
+    depends_on:
+      - mongo
+    env_file:
+      - ./APDE_BE/.env
+    ports:
+      - "8000:8000"
+    working_dir: /var/www/html
+    volumes:
+      - ./APDE_BE:/var/www/html
+      - ./entrypoints:/apde-entrypoints:ro
+    command: [ "sh", "-lc", "/apde-entrypoints/backend.sh" ]
+
+  frontend:
+    image: node:24-alpine
+    container_name: apde_frontend
+    depends_on:
+      - backend
+    env_file:
+      - ./APDE_FE/.env
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    volumes:
+      - ./APDE_FE:/app
+      - ./entrypoints:/apde-entrypoints:ro
+      - /app/node_modules
+    command: [ "sh", "-lc", "/apde-entrypoints/frontend.sh" ]
+
+volumes:
+  mongo_data:
